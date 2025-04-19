@@ -52,9 +52,9 @@ const Navbar = () => {
     }, []);
 
     return (
-        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'shadow-md' : ''}`}>
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 mx-auto  ${isScrolled ? 'shadow-md' : ''}`}>
             {/* Main Navbar */}
-            <div className={`px-3 sm:px-4 lg:px-12 py-3 sm:py-4 flex items-center bg-primary w-full transition-all duration-300 ${isScrolled ? 'py-2 sm:py-3' : ''}`}>
+            <div className={`px-3 sm:px-4 lg:px-45 py-3 sm:py-4 mx-auto flex items-center bg-primary w-full transition-all duration-300 ${isScrolled ? 'py-2 sm:py-3' : ''}`}>
                 {/* Mobile Menu Button - Only visible on mobile */}
                 {isWide && (
                     <div className="mr-2">
