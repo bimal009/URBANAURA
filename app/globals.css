@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
@@ -118,5 +119,6 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: "Quicksand", sans-serif;
   }
 }
