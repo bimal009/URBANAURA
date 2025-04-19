@@ -83,8 +83,8 @@ const Hero = () => {
                         {/* Floating elements */}
                         <div className="absolute -bottom-4 -left-4 md:-left-8 bg-background border border-border p-4 rounded-2xl shadow-md w-40">
                             <div className="flex items-center">
-                                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                                    <span className="text-primary-foreground font-bold">30%</span>
+                                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center px-2">
+                                    <span className="text-primary-foreground font-bold ">30%</span>
                                 </div>
                                 <div className="ml-3">
                                     <div className="text-xs text-muted-foreground">Limited offer</div>
