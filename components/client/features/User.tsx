@@ -3,7 +3,7 @@ import React from 'react'
 
 const User = () => {
     return (
-        <div className='text-white justify-center items-center' ><User2 /></div>
+        <div className='text-white justify-center items-center' ><User2 size={20} /></div>
     )
 }
 
