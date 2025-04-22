@@ -7,9 +7,14 @@ import CategorySection from '@/components/client/Catagories'
 import FeaturesSection from '@/components/client/Features'
 import TestimonialsSection from '@/components/client/Testimonials'
 
+
+
+
 const page = () => {
+
     return (
         <>
+
             <Navbar />
             <Hero />
             <BestSellingPage />
