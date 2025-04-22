@@ -1,9 +1,9 @@
 "use client"
-import {
-    QueryClient,
-    QueryClientProvider,
-} from '@tanstack/react-query'
-const queryClient = new QueryClient()
+
+import { Toaster } from "@/components/ui/sonner"
+
+import { QueryProvider } from "@/providers/queryProvider";
+
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -13,10 +13,11 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body>
-                <QueryClientProvider client={queryClient}>
-
+                <Toaster />
+                <QueryProvider>
                     {children}
-                </QueryClientProvider>
+                </QueryProvider>
+
             </body>
         </html>
     );

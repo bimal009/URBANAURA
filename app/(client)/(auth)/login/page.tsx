@@ -5,11 +5,9 @@ import { useForm, SubmitHandler } from "react-hook-form";
 type LoginInputs = {
     email: string;
     password: string;
-    username: string;
-    id?: string;
 };
 
-export default function Page() {
+export default function LoginForm() {
     const {
         register,
         handleSubmit,
@@ -29,20 +27,7 @@ export default function Page() {
                 <div className="text-center">
                     <h1 className="text-3xl font-bold text-foreground mb-1">Urbanaura</h1>
                     <div className="h-1 w-16 bg-primary mx-auto mb-4"></div>
-                    <h2 className="text-xl font-medium text-muted-foreground">Create A New Account</h2>
-                </div>
-
-                <div>
-                    <label className="block mb-1 font-medium text-foreground">Username</label>
-                    <input
-                        type="text"
-                        placeholder="Enter your email"
-                        {...register("username", { required: "Username is required" })}
-                        className="w-full px-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
-                    />
-                    {errors.email && (
-                        <p className="text-destructive text-sm mt-1">{errors.username?.message}</p>
-                    )}
+                    <h2 className="text-xl font-medium text-muted-foreground">Login Now</h2>
                 </div>
 
                 <div>
@@ -83,12 +68,15 @@ export default function Page() {
                     type="submit"
                     className="w-full bg-primary text-primary-foreground py-3 rounded-md hover:bg-primary/90 transition duration-200 font-medium"
                 >
-                    Sign up
+                    Login
                 </button>
 
-                <div className="flex justify-center items-center text-center text-sm text-muted-foreground pt-2">
-                    <Link href="/login" className="hover:text-primary hover:underline transition">
-                        Already Have Account
+                <div className="flex justify-between text-sm text-muted-foreground pt-2">
+                    <Link href="/forget-password" className="hover:text-primary hover:underline transition">
+                        Forgot Password?
+                    </Link>
+                    <Link href="/signin" className="hover:text-primary hover:underline transition">
+                        Create Account
                     </Link>
                 </div>
             </form>
