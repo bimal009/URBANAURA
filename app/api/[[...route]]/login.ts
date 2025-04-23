@@ -6,9 +6,9 @@ import * as bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { tokenGen } from "@/utils/tokenGen";
 
-const login = new Hono();
+const login = new Hono()
 
-login.post(
+.post(
   "/",
   zValidator("json", InsertUserSchema.pick({ email: true, password: true })),
   async (c) => {
