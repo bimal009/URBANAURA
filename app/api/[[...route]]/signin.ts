@@ -4,9 +4,9 @@ import { InsertUserSchema, users } from "@/db/schema";
 import { createId } from "@paralleldrive/cuid2";
 import { db } from "@/db/db";
 import * as bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 
-const signin = new Hono()
+const signup = new Hono()
 
 .post(
   "/",
@@ -19,15 +19,24 @@ const signin = new Hono()
         return c.json({ message: "Fill the required fields" }, 400);
       }
 
-    
+      // Check if user exists by email OR username
       const existingUser = await db
         .select()
         .from(users)
-        .where(eq(users.email, email.toLowerCase()))
+        .where(
+          or(
+            eq(users.email, email.toLowerCase()),
+            eq(users.username, username)
+          )
+        )
         .then((res) => res[0]);
 
       if (existingUser) {
-        return c.json({ message: "User already exists" }, 409);
+        if (existingUser.email === email.toLowerCase()) {
+          return c.json({ message: "Email already registered" }, 409);
+        } else {
+          return c.json({ message: "Username already taken" }, 409);
+        }
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -47,10 +56,10 @@ const signin = new Hono()
         201
       );
     } catch (error) {
-      console.error("Error inserting user:", error);
-      return c.json({ error: "Failed to insert user" }, 500);
+      console.error("Error registering user:", error);
+      return c.json({ error: "Failed to register user" }, 500);
     }
   }
 );
 
-export default signin;
+export default signup;

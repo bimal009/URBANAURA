@@ -6,9 +6,9 @@ import * as bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { tokenGen } from "@/utils/tokenGen";
 
-const login = new Hono()
+const login = new Hono();
 
-.post(
+login.post(
   "/",
   zValidator("json", InsertUserSchema.pick({ email: true, password: true })),
   async (c) => {
@@ -16,7 +16,7 @@ const login = new Hono()
       const { email, password } = await c.req.valid("json");
 
       if (!email || !password) {
-        return c.json({ message: "Please provide both email and password." }, 400);
+        return c.json({ error: "Please provide both email and password." }, 400);
       }
 
       const user = await db
@@ -26,24 +26,24 @@ const login = new Hono()
         .then((res) => res[0]);
 
       if (!user) {
-        return c.json({ message: "User does not exist." }, 409);
+        return c.json({ error: "User does not exist." }, 404);
       }
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (!isPasswordValid) {
-        return c.json({ message: "Incorrect password." }, 401);
+        return c.json({ error: "Incorrect password." }, 401);
       }
 
-      const token = tokenGen({
+      const token = await tokenGen({
         email: user.email,
         id: user.id,
       });
 
       return c.json({
-        message: "Login successful.",
+        message: "Login successful",
         token,
-      });
+      }, 200);
 
     } catch (error) {
       console.error("Login error:", error);

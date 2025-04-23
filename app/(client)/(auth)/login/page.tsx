@@ -24,7 +24,11 @@ export default function LoginForm() {
 
     const onSubmit: SubmitHandler<LoginInputs> = (formData) => {
         login(formData);
-        toast.success("Login successful");
+        if (status === "success") {
+            toast.success("Login successful");
+        } else if (status === "error") {
+            toast.error("Login failed");
+        }
     };
 
     useEffect(() => {
@@ -88,7 +92,7 @@ export default function LoginForm() {
                     <Link href="/forget-password" className="hover:text-primary hover:underline transition">
                         Forgot Password?
                     </Link>
-                    <Link href="/signin" className="hover:text-primary hover:underline transition">
+                    <Link href="/signup" className="hover:text-primary hover:underline transition">
                         Create Account
                     </Link>
                 </div>

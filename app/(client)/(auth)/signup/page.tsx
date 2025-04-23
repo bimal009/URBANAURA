@@ -1,5 +1,5 @@
 "use client"
-import { useSignInMutation } from "@/components/client/api/use-get-sign-in";
+import { useSignUpMutation } from "@/components/client/api/use-get-sign-up";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -15,7 +15,7 @@ type SigninInputs = {
 
 export default function Page() {
     const router = useRouter()
-    const { mutate: signIn, isPending, isSuccess, isError, data: signInData } = useSignInMutation();
+    const { mutate: signIn, isPending, isSuccess, isError, data: signUpData } = useSignUpMutation();
 
     const {
         register,

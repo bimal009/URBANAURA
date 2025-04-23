@@ -19,11 +19,14 @@ export const useLoginMutation = () => {
             const response = await client.api.login.$post({ json });
             const data = await response.json() as LoginResponse;
 
+            if (!response.ok) {
+                throw new Error('Login failed');
+            }
+
             if ('token' in data) {
                 localStorage.setItem("token", data.token);
                 return data;
             } else {
-                // Handle error response gracefully
                 throw new Error(data.error || "Login failed");
             }
         },
