@@ -1,5 +1,7 @@
 "use client";
 import { Search as SearchIcon, X } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useState, useRef, useEffect } from 'react';
 
 const Search: React.FC = () => {
@@ -7,7 +9,7 @@ const Search: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const searchInputRef = useRef<HTMLInputElement>(null);
     const searchContainerRef = useRef<HTMLDivElement>(null);
-
+    const router = useRouter();
     // Handle click outside to collapse search
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent): void => {
@@ -31,6 +33,7 @@ const Search: React.FC = () => {
         if (isExpanded && searchInputRef.current) {
             searchInputRef.current.focus();
         }
+
     }, [isExpanded]);
 
     const expandSearch = (): void => {
@@ -52,11 +55,13 @@ const Search: React.FC = () => {
     };
 
     return (
-        <div ref={searchContainerRef} className="search relative">
+        <div ref={searchContainerRef} onClick={() => router.push(`/products`)} className="search relative">
             {isExpanded ? (
                 <form onSubmit={handleSubmit} className="relative">
                     <div className="input flex items-center bg-card rounded-full border border-input shadow-sm transition-all duration-300 py-2 px-3 sm:w-64 w-48">
+
                         <SearchIcon size={18} className="text-muted-foreground flex-shrink-0" />
+
 
                         <input
                             ref={searchInputRef}
@@ -81,9 +86,11 @@ const Search: React.FC = () => {
             ) : (
                 <button
                     onClick={expandSearch}
+
                     className="p-2 rounded-full bg-primary/10 hover:bg-primary/20 text-primary-foreground transition-all duration-200"
                     aria-label="Open search"
                 >
+
                     <SearchIcon size={20} className="cursor-pointer" />
                 </button>
             )}

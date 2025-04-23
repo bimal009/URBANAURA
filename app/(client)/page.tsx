@@ -1,4 +1,4 @@
-import Navbar from '@/components/client/Navbar'
+
 import Hero from '@/components/client/Hero'
 import React from 'react'
 import BestSellingPage from '@/components/client/BestSelling'
@@ -15,7 +15,7 @@ const page = () => {
     return (
         <>
 
-            <Navbar />
+
             <Hero />
             <BestSellingPage />
             <CategorySection />

@@ -16,7 +16,7 @@ import {
     SheetClose
 } from "@/components/ui/sheet"
 import { Menu } from 'lucide-react';
-
+import { useRouter } from 'next/navigation';
 const Navlinks = [
     { href: "/", label: "Home" },
     { href: "/products", label: "Products" },
@@ -33,6 +33,7 @@ const QuickLinks = [
 ];
 
 const Navbar = () => {
+    const router = useRouter();
     const { isWide } = useMediaStatus();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -129,7 +130,7 @@ const Navbar = () => {
                 )}
 
                 {/* Logo - Visible on all screens, but centered on mobile */}
-                <div className={`logo font-medium text-xl text-secondary  hidden lg:flex`}>
+                <div onClick={() => router.push(`/`)} className={`logo font-medium text-xl text-secondary  hidden lg:flex`}>
                     <Link href="/">URBANAURA</Link>
                 </div>
 
