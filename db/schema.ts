@@ -3,7 +3,7 @@ import { createInsertSchema } from 'drizzle-zod';
 
 export const users = pgTable("users", {
   id: text("id").primaryKey(),
-  username: text("username").notNull().unique(),
+  username: text("username").unique(),
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

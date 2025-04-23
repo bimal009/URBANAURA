@@ -1,21 +1,30 @@
 import { Hono } from 'hono';
-import { handle } from 'hono/vercel';
-import login from './login';
 import signin from './signin';
+import login from './login';
 
 export const runtime = 'nodejs';
 export const preferredRegion = 'auto';
 
-const app = new Hono().basePath('/api')
-.route('/signin', signin)
-.route('/login', login)
+const app = new Hono()
+  .basePath('/api')
+  .route('/login', login)
+  .route('/signin', signin);
 
+export async function GET(request: Request) {
+  return app.fetch(request);
+}
 
-export const GET = handle(app);
-export const POST = handle(app);
-export const PUT = handle(app);
-export const DELETE = handle(app);
-export const PATCH = handle(app);
+export async function POST(request: Request) {
+  return app.fetch(request);
+}
 
-// App type
+export async function PUT(request: Request) {
+  return app.fetch(request);
+}
+
+export async function DELETE(request: Request) {
+  return app.fetch(request);
+}
+
+// Optional type export
 export type AppType = typeof app;

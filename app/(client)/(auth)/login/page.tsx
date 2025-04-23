@@ -1,6 +1,11 @@
-"use client"
+"use client";
+
+import { useLoginMutation } from "@/components/client/api/use-get-login";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { toast } from "sonner";
 
 type LoginInputs = {
     email: string;
@@ -8,15 +13,25 @@ type LoginInputs = {
 };
 
 export default function LoginForm() {
+    const router = useRouter();
+    const { mutate: login, isPending, status } = useLoginMutation();
+
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<LoginInputs>();
 
-    const onSubmit: SubmitHandler<LoginInputs> = (data) => {
-        console.log("Login Data:", data);
+    const onSubmit: SubmitHandler<LoginInputs> = (formData) => {
+        login(formData);
+        toast.success("Login successful");
     };
+
+    useEffect(() => {
+        if (status === "success") {
+            router.push("/");
+        }
+    }, [status, router]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background">
@@ -26,7 +41,7 @@ export default function LoginForm() {
             >
                 <div className="text-center">
                     <h1 className="text-3xl font-bold text-foreground mb-1">Urbanaura</h1>
-                    <div className="h-1 w-16 bg-primary mx-auto mb-4"></div>
+                    <div className="h-1 w-16 bg-primary mx-auto mb-4" />
                     <h2 className="text-xl font-medium text-muted-foreground">Login Now</h2>
                 </div>
 
@@ -58,9 +73,7 @@ export default function LoginForm() {
                         className="w-full px-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
                     />
                     {errors.password && (
-                        <p className="text-destructive text-sm mt-1">
-                            {errors.password.message}
-                        </p>
+                        <p className="text-destructive text-sm mt-1">{errors.password.message}</p>
                     )}
                 </div>
 
@@ -68,7 +81,7 @@ export default function LoginForm() {
                     type="submit"
                     className="w-full bg-primary text-primary-foreground py-3 rounded-md hover:bg-primary/90 transition duration-200 font-medium"
                 >
-                    Login
+                    {isPending ? "Logging in..." : "Login"}
                 </button>
 
                 <div className="flex justify-between text-sm text-muted-foreground pt-2">
