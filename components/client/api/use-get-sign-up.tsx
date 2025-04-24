@@ -1,42 +1,53 @@
-import { InferRequestType } from "hono";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import client from "@/lib/hono";
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+
+// Define the request body type
+type SignUpRequest = {
+    email: string
+    password: string
+    username?: string
+}
 
 type SignupResponse = {
-    message: string;
+    message: string
     data?: {
-        id: string;
-        username: string | null;
-        email: string;
-        password: string;
-        createdAt: string;
-    };
-};
+        id: string
+        username: string | null
+        email: string
+        password: string
+        createdAt: string
+    }
+}
 
 type SignupErrorResponse = {
-    message: string;
-    error?: string;
-};
-
-type RequestType = InferRequestType<typeof client.api.signin.$post>['json'];
+    error: string
+}
 
 export const useSignUpMutation = () => {
-    const queryClient = useQueryClient();
+    const queryClient = useQueryClient()
 
-    return useMutation<SignupResponse, SignupErrorResponse, RequestType>({
+    return useMutation<SignupResponse, SignupErrorResponse, SignUpRequest>({
         mutationFn: async (json) => {
-            const response = await client.api.signin.$post({ json });
+            const response = await fetch('/api/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(json),
+            })
 
             if (!response.ok) {
-                const errorData = await response.json() as SignupErrorResponse;
-                throw new Error(errorData.message || errorData.error || 'Already have an account');
+                const errorData = await response.json() as SignupErrorResponse
+                throw new Error(errorData.error || 'Failed to register user')
             }
 
-            const data = await response.json() as SignupResponse;
-            return data;
+            const data = await response.json() as SignupResponse
+            return data
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["users"] });
+            queryClient.invalidateQueries({ queryKey: ['users'] })
         },
-    });
-};
+        onError: (error) => {
+            console.error('Signup error:', error)
+        },
+    })
+}

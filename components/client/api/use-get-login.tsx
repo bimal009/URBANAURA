@@ -1,37 +1,52 @@
-import { InferRequestType } from "hono";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import client from "@/lib/hono";
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 type LoginResponse = {
-    message: string;
-    token: string;
-} | {
-    error: string;
-};
+    message: string
+    token: string
+}
 
-type RequestType = InferRequestType<typeof client.api.login.$post>['json'];
+type LoginErrorResponse = {
+    error: string
+}
+
+type LoginRequest = {
+    email: string
+    password: string
+}
 
 export const useLoginMutation = () => {
-    const queryClient = useQueryClient();
+    const queryClient = useQueryClient()
 
-    return useMutation<LoginResponse, Error, RequestType>({
+    return useMutation<LoginResponse, LoginErrorResponse, LoginRequest>({
         mutationFn: async (json) => {
-            const response = await client.api.login.$post({ json });
-            const data = await response.json() as LoginResponse;
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(json),
+            })
 
+            // Check if the response is successful
             if (!response.ok) {
-                throw new Error('Login failed');
+                const errorData = await response.json() as LoginErrorResponse
+                throw new Error(errorData.error || "Login failed")
             }
 
-            if ('token' in data) {
-                localStorage.setItem("token", data.token);
-                return data;
+            // If successful, parse the JSON and check for token
+            const data = await response.json() as LoginResponse
+            if (data.token) {
+                localStorage.setItem("token", data.token) // Save the token in localStorage
+                return data
             } else {
-                throw new Error(data.error || "Login failed");
+                throw new Error("Login failed, no token received.")
             }
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["login"] });
+            queryClient.invalidateQueries({ queryKey: ["login"] })
         },
-    });
-};
+        onError: (error: LoginErrorResponse) => {
+            console.error("Login Error:", error.error)
+        }
+    })
+}
