@@ -17,19 +17,12 @@ import {
 } from "@/components/ui/sheet"
 import { Menu } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+
 const Navlinks = [
     { href: "/", label: "Home" },
     { href: "/products", label: "Products" },
-    { href: "/categories", label: "Categories" },
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
-];
-
-// Additional quick links to be displayed beside search
-const QuickLinks = [
-    { href: "/new-arrivals", label: "New" },
-    { href: "/sale", label: "Sale" },
-    { href: "/login", label: "Login" },
 ];
 
 const Navbar = () => {
@@ -37,6 +30,19 @@ const Navbar = () => {
     const { isWide } = useMediaStatus();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isSheetOpen, setIsSheetOpen] = useState(false);
+    const [isClient, setIsClient] = useState(false);
+    const [token, setToken] = useState<string | null>(null);
+
+    // Set isClient to true on mount
+    useEffect(() => {
+        setIsClient(true);
+        const storedToken = localStorage.getItem("token");
+        setToken(storedToken);
+    }, []);
+
+    const QuickLinks = [
+        ...(!token ? [{ href: "/login", label: "Login" }] : []),
+    ];
 
     // Handle scroll effect for sticky navbar
     useEffect(() => {
@@ -52,8 +58,18 @@ const Navbar = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    // Don't render QuickLinks until client-side hydration is complete
+    const renderQuickLinks = () => {
+        if (!isClient) return null;
+        return QuickLinks.map((item, index) => (
+            <div key={`quick-${index}`} className='text-white/90 hover:text-white text-sm font-medium transition-colors'>
+                <Link href={item.href}>{item.label}</Link>
+            </div>
+        ));
+    };
+
     return (
-        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 mx-auto  `}>
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 mx-auto`}>
             {/* Main Navbar */}
             <div className={`px-3 sm:px-4 lg:px-45 py-3 sm:py-4 mx-auto flex items-center bg-primary w-full transition-all duration-300 ${isScrolled ? 'py-2 sm:py-3' : ''}`}>
                 {/* Mobile Menu Button - Only visible on mobile */}
@@ -74,9 +90,7 @@ const Navbar = () => {
                                                     <Link href="/" onClick={() => setIsSheetOpen(false)}>URBANAURA</Link>
                                                 </div>
                                             </SheetTitle>
-                                            <SheetClose >
-
-                                            </SheetClose>
+                                            <SheetClose />
                                         </div>
                                         <SheetDescription className='sr-only'>
                                             Navigate to different Pages
@@ -94,22 +108,6 @@ const Navbar = () => {
                                                     </Link>
                                                 </SheetClose>
                                             ))}
-
-                                            {/* Quick links in mobile menu */}
-                                            <div className="mt-4 pt-2 px-4 border-t">
-                                                <div className="text-sm text-gray-500 mb-2">Quick Links</div>
-                                                <div className="flex flex-wrap gap-3">
-                                                    {QuickLinks.map((item, index) => (
-                                                        <SheetClose asChild key={`quick-${index}`}>
-                                                            <Link href={item.href}>
-                                                                <div className='text-white bg-primary px-4 py-2 rounded-full text-sm font-medium hover:bg-primary/90 active:bg-primary/80 transition-colors'>
-                                                                    {item.label}
-                                                                </div>
-                                                            </Link>
-                                                        </SheetClose>
-                                                    ))}
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
 
@@ -130,7 +128,7 @@ const Navbar = () => {
                 )}
 
                 {/* Logo - Visible on all screens, but centered on mobile */}
-                <div onClick={() => router.push(`/`)} className={`logo font-medium text-xl text-secondary  hidden lg:flex`}>
+                <div onClick={() => router.push(`/`)} className={`logo font-medium text-xl text-secondary hidden lg:flex`}>
                     <Link href="/">URBANAURA</Link>
                 </div>
 
@@ -148,11 +146,7 @@ const Navbar = () => {
 
                 {/* Quick links beside search - visible on medium screens and up */}
                 <div className="hidden md:flex gap-5 mr-6">
-                    {QuickLinks.map((item, index) => (
-                        <div key={`quick-${index}`} className='text-white/90 hover:text-white text-sm font-medium transition-colors'>
-                            <Link href={item.href}>{item.label}</Link>
-                        </div>
-                    ))}
+                    {renderQuickLinks()}
                 </div>
 
                 {/* Icons section - improved spacing for mobile */}

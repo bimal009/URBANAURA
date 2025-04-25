@@ -41,15 +41,35 @@ export async function POST(request: Request) {
     const token = await tokenGen({
       email: user.email,
       id: user.id,
+      role: user.role
     });
 
-    return NextResponse.json(
+    // Create the response
+    const response = NextResponse.json(
       {
         message: "Login successful",
         token,
+        role: user.role
       },
       { status: 200 }
     );
+
+    // Set the token and role cookies
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24 * 7 // 1 week
+    });
+
+    response.cookies.set('role', user.role, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24 * 7 // 1 week
+    });
+
+    return response;
   } catch (error) {
     console.error("Login error:", error);
     if (error instanceof z.ZodError) {

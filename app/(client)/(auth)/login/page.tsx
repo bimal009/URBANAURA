@@ -14,7 +14,7 @@ type LoginInputs = {
 
 export default function LoginForm() {
     const router = useRouter();
-    const { mutate: login, isPending, status } = useLoginMutation();
+    const { mutate: login, isPending, status, error } = useLoginMutation();
 
     const {
         register,
@@ -36,6 +36,12 @@ export default function LoginForm() {
             router.push("/");
         }
     }, [status, router]);
+
+    useEffect(() => {
+        if (error) {
+            toast.error("Login failed");
+        }
+    }, [error]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background">

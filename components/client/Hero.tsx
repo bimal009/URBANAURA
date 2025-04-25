@@ -38,12 +38,7 @@ const Hero = () => {
                                 Shop Now
                                 <ArrowRight className="ml-2 h-5 w-5" />
                             </Link>
-                            <Link
-                                href="/collections"
-                                className="bg-accent hover:bg-accent/80 text-accent-foreground font-medium rounded-full px-6 py-3 transition-all"
-                            >
-                                View Collections
-                            </Link>
+
                         </div>
 
                         {/* Trust badges */}
