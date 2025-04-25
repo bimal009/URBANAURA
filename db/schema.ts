@@ -1,14 +1,14 @@
-import { integer, pgTable, text, decimal, timestamp } from "drizzle-orm/pg-core";
+import { integer, pgTable, text, decimal, timestamp, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from 'drizzle-zod';
 import { relations } from "drizzle-orm";
 
 export const users = pgTable("users", {
   id: text("id").primaryKey(),
-  username: text("username").unique(),
-  email: text("email").notNull().unique(),
+  name: varchar("name", { length: 255 }),
+  email: varchar("email", { length: 255 }).unique().notNull(),
   password: text("password").notNull(),
-  role: text("role").default("user").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const products = pgTable("products", {
@@ -95,4 +95,8 @@ export const InsertOrderSchema = createInsertSchema(orders);
 export const InsertProductSchema = createInsertSchema(products);
 export const InsertUserSchema = createInsertSchema(users);
 export const InsertCartSchema = createInsertSchema(cart);
+
+export type User = typeof users.$inferSelect
+export type NewUser = typeof users.$inferInsert
+
 // npx drizzle-kit push to push inn data base

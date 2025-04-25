@@ -1,6 +1,6 @@
 // use-get-products.ts
 import { useQuery } from "@tanstack/react-query"
-import type { Product } from "../hooks/use-product-store"
+import type { Product } from "../../../lib/store/ProductStore"
 
 export type GetProductsResponse = {
     id: string

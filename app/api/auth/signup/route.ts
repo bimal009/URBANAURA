@@ -9,13 +9,13 @@ import { z } from "zod";
 const signupSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
-  username: z.string().min(3),
+  name: z.string().min(3),
 });
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, password, username } = signupSchema.parse(body);
+    const { email, password, name } = signupSchema.parse(body);
 
     const existingUser = await db
       .select()
@@ -35,14 +35,18 @@ export async function POST(request: Request) {
     const [newUser] = await db.insert(users).values({
       id: createId(),
       email: email.toLowerCase(),
-      username,
+      name,
       password: hashedPassword,
     }).returning();
 
     return NextResponse.json(
       {
         message: "User created successfully",
-        data: newUser,
+        data: {
+          id: newUser.id,
+          name: newUser.name,
+          email: newUser.email,
+        },
       },
       { status: 201 }
     );

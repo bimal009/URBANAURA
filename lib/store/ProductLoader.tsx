@@ -1,7 +1,7 @@
 "use client"
 import { useEffect } from "react"
-import useGetProducts from "../api/use-get-products"
-import useProductStore from "./use-product-store"
+import useGetProducts from "../../components/client/api/use-get-products"
+import useProductStore from "./ProductStore"
 
 const ProductLoader = () => {
     const { data, error } = useGetProducts()

@@ -1,5 +1,5 @@
 import Products from '@/components/client/Products'
-import ProductLoader from '@/components/client/hooks/use-get-products'
+import ProductLoader from '@/lib/store/ProductLoader'
 import React from 'react'
 
 const page = () => {

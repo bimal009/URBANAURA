@@ -1,10 +1,10 @@
 "use client";
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import Search from './features/Search';
 import User from './features/User';
 import Cart from './features/cart';
 import { useMediaStatus } from './hooks/use-mobile';
+import { Search } from 'lucide-react';
 
 import {
     Sheet,
@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sheet"
 import { Menu } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { CartCount } from './cart-count';
 
 const Navlinks = [
     { href: "/", label: "Home" },
@@ -115,10 +116,6 @@ const Navbar = () => {
                                     <div className="border-t p-4">
                                         <div className="flex items-center justify-between">
                                             <div className="text-sm text-gray-500">© 2025 UrbanAura</div>
-                                            <div className="flex gap-4">
-                                                <User />
-                                                <Cart />
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -153,21 +150,22 @@ const Navbar = () => {
                 <div className="flex items-center">
                     {/* Desktop search */}
                     <div className="hidden sm:block">
-                        <Search />
+                        <Search className='text-white' size={20} onClick={() => router.push(`/products`)} />
+
                     </div>
 
                     {/* Mobile-optimized icons with better spacing */}
                     <div className="flex items-center">
                         {/* Search button only visible on smallest screens */}
                         <div className="block sm:hidden mr-2">
-                            <Search />
+                            <Search className='text-white' size={20} onClick={() => router.push(`/products`)} />
                         </div>
 
                         {/* User icon - now visible on both mobile and desktop */}
                         <div className="mx-2 sm:mx-3"><User /></div>
 
                         {/* Cart icon - always visible */}
-                        <div><Cart /></div>
+                        <div ><CartCount /></div>
                     </div>
                 </div>
             </div>

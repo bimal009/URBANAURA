@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ShoppingCart, StarIcon } from "lucide-react";
 import Image from "next/image";
@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useCartStore } from "@/lib/store/cart";
+import { useRouter } from "next/navigation";
 
 // Product type definition
 type Product = {
@@ -20,7 +22,7 @@ type Product = {
     originalPrice: number
     rating: number
     reviewCount: number
-    image: string  // Must be a required string, not optional
+    image: string
     category: string
     isNew: boolean
     discount: number
@@ -53,6 +55,31 @@ const RatingStars: React.FC<{ rating: number }> = ({ rating }) => {
 };
 
 const Cards: React.FC<CardProps> = ({ product, children, className, onClick }) => {
+    const addItem = useCartStore((state) => state.addItem);
+    const router = useRouter();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        setIsAuthenticated(!!token);
+    }, []);
+
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!isAuthenticated) {
+            router.push('/login');
+            return;
+        }
+        if (product) {
+            addItem({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.image
+            });
+        }
+    };
+
     if (product) {
         return (
             <ShadcnCard
@@ -78,7 +105,11 @@ const Cards: React.FC<CardProps> = ({ product, children, className, onClick }) =
                     )}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-end justify-center opacity-0 group-hover:opacity-100">
                         <div className="flex gap-2 mb-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                            <Button size="icon" className="rounded-full h-8 w-8 shadow-md bg-primary hover:bg-primary/90 p-0">
+                            <Button
+                                size="icon"
+                                className="rounded-full h-8 w-8 shadow-md bg-primary hover:bg-primary/90 p-0"
+                                onClick={handleAddToCart}
+                            >
                                 <ShoppingCart className="h-3 w-3" />
                             </Button>
                         </div>
@@ -109,7 +140,11 @@ const Cards: React.FC<CardProps> = ({ product, children, className, onClick }) =
                 </CardContent>
 
                 <CardFooter className="p-3 pt-0">
-                    <Button size="sm" className="w-full rounded-full text-xs bg-primary hover:bg-primary/90 text-primary-foreground">
+                    <Button
+                        onClick={handleAddToCart}
+                        size="sm"
+                        className="w-full rounded-full text-xs bg-primary hover:bg-primary/90 text-primary-foreground"
+                    >
                         Add to Cart
                     </Button>
                 </CardFooter>
