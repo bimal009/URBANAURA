@@ -1,9 +1,9 @@
+// use-get-products.ts
 import { useQuery } from "@tanstack/react-query"
-import { createId } from "@paralleldrive/cuid2"
 import type { Product } from "../hooks/use-product-store"
 
 export type GetProductsResponse = {
-    id: number
+    id: string
     title: string
     price: number
     description: string
@@ -42,15 +42,13 @@ const useGetProducts = () => {
                 const data = await response.json()
                 // Transform the data to match our store's Product type
                 return data.map((product: GetProductsResponse[0]): Product => ({
-                    id: product.id,
+                    id: product.id.toString(), // Ensure id is a string
                     title: product.title,
                     price: product.price,
                     description: product.description,
-                    category: {
-                        id: createId(),
-                        name: product.category
-                    },
-                    images: [product.image]
+                    category: product.category, // Keep as string instead of transforming to object
+                    image: product.image,
+                    rating: product.rating
                 }))
             } catch (error) {
                 throw {

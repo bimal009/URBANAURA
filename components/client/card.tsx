@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ShoppingCart, Heart, StarIcon } from "lucide-react";
+import { ShoppingCart, StarIcon } from "lucide-react";
 import Image from "next/image";
 import {
     Card as ShadcnCard,
@@ -14,22 +14,24 @@ import { Badge } from "@/components/ui/badge";
 
 // Product type definition
 type Product = {
-    id: number;
-    name: string;
-    price: number;
-    originalPrice: number;
-    rating: number;
-    reviewCount: number;
-    image: string;
-    category: string;
-    isNew: boolean;
-    discount: number;
-};
+    id: string
+    name: string
+    price: number
+    originalPrice: number
+    rating: number
+    reviewCount: number
+    image: string  // Must be a required string, not optional
+    category: string
+    isNew: boolean
+    discount: number
+    hideHeart: boolean
+}
 
 type CardProps = {
     product?: Product;
     children?: React.ReactNode;
     className?: string;
+    onClick?: () => void;
 };
 
 const RatingStars: React.FC<{ rating: number }> = ({ rating }) => {
@@ -50,10 +52,13 @@ const RatingStars: React.FC<{ rating: number }> = ({ rating }) => {
     );
 };
 
-const Cards: React.FC<CardProps> = ({ product, children, className }) => {
+const Cards: React.FC<CardProps> = ({ product, children, className, onClick }) => {
     if (product) {
         return (
-            <ShadcnCard className={`rounded-lg overflow-hidden border-border h-full flex flex-col ${className}`}>
+            <ShadcnCard
+                className={`rounded-lg overflow-hidden border-border h-full flex flex-col ${className || ''} cursor-pointer`}
+                onClick={onClick}
+            >
                 <div className="relative aspect-square overflow-hidden group">
                     <Image
                         fill
@@ -73,9 +78,6 @@ const Cards: React.FC<CardProps> = ({ product, children, className }) => {
                     )}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-end justify-center opacity-0 group-hover:opacity-100">
                         <div className="flex gap-2 mb-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                            <Button size="icon" variant="secondary" className="rounded-full h-8 w-8 shadow-md p-0">
-                                <Heart className="h-3 w-3" />
-                            </Button>
                             <Button size="icon" className="rounded-full h-8 w-8 shadow-md bg-primary hover:bg-primary/90 p-0">
                                 <ShoppingCart className="h-3 w-3" />
                             </Button>
@@ -116,7 +118,7 @@ const Cards: React.FC<CardProps> = ({ product, children, className }) => {
     }
 
     return (
-        <ShadcnCard className={className}>
+        <ShadcnCard className={className || ''}>
             {children}
         </ShadcnCard>
     );

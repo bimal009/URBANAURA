@@ -6,7 +6,7 @@ import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 
 interface Product {
-    id: number;
+    id: string;
     title: string;
     description: string;
     image: string;
@@ -25,9 +25,16 @@ const CategorySection: React.FC = () => {
                     throw new Error('Network response was not ok');
                 }
 
-                const data: Product[] = await response.json();
-                setProducts(data);
-                console.log(data)
+                const data = await response.json();
+                // Transform the data to match our Product interface
+                const transformedData: Product[] = data.map((item: any) => ({
+                    id: String(item.id),
+                    title: item.title,
+                    description: item.description,
+                    image: item.image,
+                    category: item.category
+                }));
+                setProducts(transformedData);
             } catch (error) {
                 console.error('There was an error:', error);
             }
@@ -48,7 +55,7 @@ const CategorySection: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {products.map((product) => (
-                        <div key={product.id} className="group relative overflow-hidden rounded-xl">
+                        <div key={`category-${product.id}`} className="group relative overflow-hidden rounded-xl">
                             {/* Product Image */}
                             <div className="aspect-[3/4] overflow-hidden relative">
                                 <Image

@@ -1,15 +1,17 @@
+// use-product-store.ts
 import { create } from "zustand"
 
 export type Product = {
-    id: number
+    id: string
     title: string
     price: number
     description: string
-    category: {
-        id: number
-        name: string
+    category: string  // Changed from object to string
+    image: string
+    rating: {
+        rate: number
+        count: number
     }
-    images: string[]
 }
 
 interface ProductState {

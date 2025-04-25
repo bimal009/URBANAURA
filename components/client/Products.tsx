@@ -1,20 +1,25 @@
 "use client"
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import useProductStore from './hooks/use-product-store'
 import type { Product } from './hooks/use-product-store'
 import Cards from './card'
+import { Card } from '@/components/ui/card'
+
+// Define the type expected by the Cards component
+
 
 export default function Products() {
+    const router = useRouter()
     const products = useProductStore((state) => state.products)
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedCategories, setSelectedCategories] = useState<string[]>(['all'])
-    console.log(products)
 
     // Get unique categories for filter checkboxes
-    const uniqueCategories = ['all', ...new Set(products.map((product: Product) => product.category.name))]
+    const uniqueCategories = ['all', ...new Set(products.map((product: Product) => product.category))]
 
     // Handle checkbox changes
     const handleCategoryChange = (category: string) => {
@@ -47,10 +52,15 @@ export default function Products() {
             product.description.toLowerCase().includes(searchTerm.toLowerCase())
 
         const matchesCategory = selectedCategories.includes('all') ||
-            selectedCategories.includes(product.category.name)
+            selectedCategories.includes(product.category)
 
         return matchesSearch && matchesCategory
     })
+
+    // Handle product click
+    const handleProductClick = (productId: string) => {
+        router.push(`/products/${productId}`);
+    };
 
     return (
         <div className="container mx-auto px-4 py-16">
@@ -79,15 +89,15 @@ export default function Products() {
                     <div className="bg-muted p-6 rounded-lg sticky top-4">
                         <h3 className="font-semibold text-lg mb-4">Categories</h3>
                         <div className="space-y-3">
-                            {uniqueCategories.map((category) => (
-                                <div key={category} className="flex items-center space-x-2">
+                            {uniqueCategories.map((category, index) => (
+                                <div key={`category-${category}-${index}`} className="flex items-center space-x-2">
                                     <Checkbox
-                                        id={`category-${category}`}
+                                        id={`category-${category}-${index}`}
                                         checked={selectedCategories.includes(category)}
                                         onCheckedChange={() => handleCategoryChange(category)}
                                     />
                                     <label
-                                        htmlFor={`category-${category}`}
+                                        htmlFor={`category-${category}-${index}`}
                                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                     >
                                         {category === 'all' ? 'All Categories' : category}
@@ -102,23 +112,28 @@ export default function Products() {
                 <div className="flex-1">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {filteredProducts.length > 0 ? (
-                            filteredProducts.map((product) => (
-                                <Cards
-                                    key={product.id}
-                                    product={{
-                                        id: product.id,
-                                        name: product.title,
-                                        price: product.price,
-                                        originalPrice: product.price,
-                                        rating: 4.5,
-                                        reviewCount: 120,
-                                        image: product.images[0],
-                                        category: product.category.name,
-                                        isNew: false,
-                                        discount: 0
-                                    }}
-                                />
-                            ))
+                            filteredProducts.map((product) => {
+                                const cardProduct = {
+                                    id: product.id,
+                                    name: product.title,
+                                    price: product.price,
+                                    originalPrice: product.price,
+                                    rating: product.rating?.rate || 0,
+                                    reviewCount: product.rating?.count || 0,
+                                    image: product.image,
+                                    category: product.category,
+                                    isNew: false,
+                                    discount: 0,
+                                    hideHeart: true
+                                };
+                                return (
+                                    <Cards
+                                        key={`product-${product.id}`}
+                                        product={cardProduct}
+                                        onClick={() => handleProductClick(product.id)}
+                                    />
+                                );
+                            })
                         ) : (
                             <div className="col-span-full text-center py-12">
                                 <h3 className="text-xl font-semibold mb-2">No products found</h3>
@@ -142,26 +157,26 @@ export default function Products() {
 
             {/* Product Information */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
-                <Cards className="p-6">
+                <Card className="p-6">
                     <h3 className="text-xl font-semibold mb-4">Quality Materials</h3>
                     <p className="text-muted-foreground">
                         All our products are crafted from premium, sustainable materials selected for both beauty and durability.
                     </p>
-                </Cards>
+                </Card>
 
-                <Cards className="p-6">
+                <Card className="p-6">
                     <h3 className="text-xl font-semibold mb-4">Free Shipping</h3>
                     <p className="text-muted-foreground">
                         Enjoy free shipping on all orders over $150. Quick and reliable delivery to your doorstep.
                     </p>
-                </Cards>
+                </Card>
 
-                <Cards className="p-6">
+                <Card className="p-6">
                     <h3 className="text-xl font-semibold mb-4">30-Day Returns</h3>
                     <p className="text-muted-foreground">
                         Not completely satisfied? Return your purchase within 30 days for a full refund or exchange.
                     </p>
-                </Cards>
+                </Card>
             </div>
         </div>
     )
