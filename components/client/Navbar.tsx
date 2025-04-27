@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import User from './features/User';
-import Cart from './features/cart';
+
 import { useMediaStatus } from './hooks/use-mobile';
 import { Search } from 'lucide-react';
 

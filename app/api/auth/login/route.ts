@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       return new NextResponse('Invalid credentials', { status: 401 })
     }
 
-    const token = await generateToken(user)
+    const token = await generateToken(user.email)
     
 
     return NextResponse.json({
