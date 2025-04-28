@@ -62,20 +62,21 @@ const User = () => {
         }
     }
 
-
-
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className='text-white hover:text-white/80 transition-colors'>
+                <button className='text-white hover:text-white/80 transition-colors flex items-center justify-center w-8 h-8'>
                     {user?.image ? (
-                        <Image
-                            src={user.image}
-                            alt={user.name || 'User'}
-                            width={24}
-                            height={24}
-                            className="rounded-full"
-                        />
+                        <div className="relative w-6 h-6">
+                            <Image
+                                src={user.image}
+                                alt={user.name || 'User'}
+                                width={24}
+                                height={24}
+                                className="rounded-full"
+                                style={{ objectFit: 'cover' }}
+                            />
+                        </div>
                     ) : (
                         <User2 size={20} />
                     )}
