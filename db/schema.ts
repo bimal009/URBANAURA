@@ -16,10 +16,10 @@ export const products = pgTable("products", {
   name: text("name").notNull(),
   description: text("description"),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
-  discount: decimal("discount", { precision: 5, scale: 2 }).default("0.00").notNull(), // in percent
+  discount: decimal("discount", { precision: 5, scale: 2 }).default("0.00").notNull(),
   stock: integer("stock").default(0).notNull(),
   imageUrl: text("image_url"),
-  category: text("category").default("normal").notNull(), // 'normal' or 'best_selling'
+  category: text("category").default("normal").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

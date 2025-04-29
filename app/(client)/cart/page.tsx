@@ -5,8 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useAuth } from "@/lib/hooks/useAuth"; // Adjust the import path as needed
 
 export default function CartPage() {
+    // This will ensure user is logged in, otherwise redirect to login
+    useAuth();
+
     const { items, updateQuantity, removeItem, clearCart } = useCartStore();
 
     const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -107,4 +111,4 @@ export default function CartPage() {
             </div>
         </div>
     );
-} 
+}

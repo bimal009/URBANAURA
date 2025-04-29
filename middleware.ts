@@ -1,56 +1,31 @@
-import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
+// middleware.ts
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  const path = request.nextUrl.pathname
-  const token = request.cookies.get('token')
-
-  // ✅ Redirect logged-in users away from login/register
-  const isAuthPage = path === '/login' || path === '/register'
-  if (token && isAuthPage) {
+  const token = request.cookies.get('token')?.value || ''
+  const isAuthPage = request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/signup'
+  
+  // If trying to access auth pages while logged in, redirect to home
+  if (isAuthPage && token) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
-  // ✅ Always allow static files and Next.js internals
-  if (
-    path.startsWith('/_next') ||
-    path === '/favicon.ico'
-  ) {
-    return NextResponse.next()
-  }
+  // For protected pages that require auth, redirect to login if not logged in
+  // Add your protected routes here
+  const protectedRoutes = ['/cart', '/profile', '/orders']
+  const isProtectedRoute = protectedRoutes.some(route => 
+    request.nextUrl.pathname.startsWith(route)
+  )
 
-  // ✅ Block API access to cart if no token
-  if (path.startsWith('/api/cart') && !token) {
-    return new NextResponse(
-      JSON.stringify({ error: 'Unauthorized' }),
-      { status: 401, headers: { 'Content-Type': 'application/json' } }
-    )
-  }
-
-  // ✅ Public routes don't need auth
-  if (path === '/' || path.startsWith('/products')) {
-    return NextResponse.next()
-  }
-
-  // ✅ Protect sensitive pages
-  if (
-    (path.startsWith('/cart') || path.startsWith('/profile') || path.startsWith('/settings')) &&
-    !token
-  ) {
-    return NextResponse.redirect(new URL('/', request.url))
+  if (isProtectedRoute && !token) {
+    return NextResponse.redirect(new URL('/login', request.url))
   }
 
   return NextResponse.next()
 }
 
+// Configure which routes the middleware runs on
 export const config = {
-  matcher: [
-    '/cart/:path*',
-    '/cart',
-    '/profile/:path*',
-    '/settings/:path*',
-    '/api/cart/:path*',
-    '/login',
-    '/register',
-  ],
+  matcher: ['/login', '/signup', '/cart', '/profile', '/orders/:path*'],
 }

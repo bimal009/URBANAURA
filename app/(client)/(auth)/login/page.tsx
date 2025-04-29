@@ -1,108 +1,111 @@
 "use client";
 
-import { useLoginMutation } from "@/components/client/api/use-get-login";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useAuth } from "@/lib/hooks/useAuth"; // Adjust the import path as needed
 
-type LoginInputs = {
-    email: string;
-    password: string;
-};
+export default function LoginPage() {
+    // This will redirect to home if already logged in
+    useAuth(true, '/');
 
-export default function LoginForm() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
-    const { mutate: login, isPending, status, error } = useLoginMutation();
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<LoginInputs>();
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError('');
 
-    const onSubmit: SubmitHandler<LoginInputs> = (formData) => {
-        login(formData);
-        if (status === "success") {
-            toast.success("Login successful");
-        } else if (status === "error") {
-            toast.error("Login failed");
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Login failed');
+            }
+
+            // Store token in localStorage
+            localStorage.setItem('token', data.token);
+
+            // Trigger a storage event so other tabs know we've logged in
+            window.dispatchEvent(new Event('storage'));
+
+            // Redirect to home or previous page
+            router.push('/');
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Login failed');
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    useEffect(() => {
-        if (status === "success") {
-            router.push("/");
-        }
-    }, [status, router]);
-
-    useEffect(() => {
-        if (error) {
-            toast.error("Login failed");
-        }
-    }, [error]);
-
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background">
-            <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="bg-card p-8 rounded-lg shadow-md w-full max-w-sm space-y-6 border border-border"
-            >
-                <div className="text-center">
-                    <h1 className="text-3xl font-bold text-foreground mb-1">Urbanaura</h1>
-                    <div className="h-1 w-16 bg-primary mx-auto mb-4" />
-                    <h2 className="text-xl font-medium text-muted-foreground">Login Now</h2>
-                </div>
+        <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[calc(100vh-200px)]">
+            <div className="w-full max-w-md">
+                <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
 
-                <div>
-                    <label className="block mb-1 font-medium text-foreground">Email</label>
-                    <input
-                        type="email"
-                        placeholder="Enter your email"
-                        {...register("email", { required: "Email is required" })}
-                        className="w-full px-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
-                    />
-                    {errors.email && (
-                        <p className="text-destructive text-sm mt-1">{errors.email.message}</p>
-                    )}
-                </div>
+                {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+                        {error}
+                    </div>
+                )}
 
-                <div>
-                    <label className="block mb-1 font-medium text-foreground">Password</label>
-                    <input
-                        type="password"
-                        placeholder="Enter your password"
-                        {...register("password", {
-                            required: "Password is required",
-                            minLength: {
-                                value: 6,
-                                message: "Password must be at least 6 characters",
-                            },
-                        })}
-                        className="w-full px-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
-                    />
-                    {errors.password && (
-                        <p className="text-destructive text-sm mt-1">{errors.password.message}</p>
-                    )}
-                </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-medium mb-1">
+                            Email
+                        </label>
+                        <Input
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Enter your email"
+                            required
+                        />
+                    </div>
 
-                <button
-                    type="submit"
-                    className="w-full bg-primary text-primary-foreground py-3 rounded-md hover:bg-primary/90 transition duration-200 font-medium"
-                >
-                    {isPending ? "Logging in..." : "Login"}
-                </button>
+                    <div>
+                        <label htmlFor="password" className="block text-sm font-medium mb-1">
+                            Password
+                        </label>
+                        <Input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter your password"
+                            required
+                        />
+                    </div>
 
-                <div className="flex justify-between text-sm text-muted-foreground pt-2">
-                    <Link href="/forget-password" className="hover:text-primary hover:underline transition">
-                        Forgot Password?
-                    </Link>
-                    <Link href="/signup" className="hover:text-primary hover:underline transition">
-                        Create Account
-                    </Link>
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                        {isLoading ? 'Logging in...' : 'Login'}
+                    </Button>
+                </form>
+
+                <div className="mt-4 text-center">
+                    <p className="text-sm">
+                        Don't have an account?{' '}
+                        <Link href="/signup" className="text-primary font-medium">
+                            Sign up
+                        </Link>
+                    </p>
                 </div>
-            </form>
+            </div>
         </div>
     );
 }

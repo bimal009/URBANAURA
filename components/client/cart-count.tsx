@@ -13,8 +13,21 @@ export function CartCount() {
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        setIsAuthenticated(!!token);
+        // Check for authentication on mount and when localStorage changes
+        const checkAuth = () => {
+            const token = localStorage.getItem("token");
+            setIsAuthenticated(!!token);
+        };
+
+        // Check immediately
+        checkAuth();
+
+        // Set up event listener for storage changes (in case user logs in/out in another tab)
+        window.addEventListener('storage', checkAuth);
+
+        return () => {
+            window.removeEventListener('storage', checkAuth);
+        };
     }, []);
 
     const handleClick = () => {
@@ -41,4 +54,4 @@ export function CartCount() {
             )}
         </div>
     );
-} 
+}

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { db } from '@/db'
 import { users } from '@/db/schema'
 import { eq } from 'drizzle-orm'
-import { generateToken} from '@/utils/jwt'
+import { generateToken } from '@/utils/jwt'
 import * as bcrypt from 'bcryptjs'
 import { z } from 'zod'
 
@@ -31,15 +31,26 @@ export async function POST(request: Request) {
 
     const token = await generateToken(user.email)
     
-
-    return NextResponse.json({
+    // Set the cookie in the response
+    const response = NextResponse.json({
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
-        
-      },token
+      },
+      token
     })
+    
+    // Add cookie to the response
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+      path: '/',
+    })
+
+    return response
   } catch (error) {
     console.error('[LOGIN]', error)
     if (error instanceof z.ZodError) {
@@ -53,4 +64,4 @@ export async function POST(request: Request) {
       { status: 500 }
     )
   }
-} 
+}
