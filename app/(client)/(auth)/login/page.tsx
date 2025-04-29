@@ -1,25 +1,38 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useAuth } from "@/lib/hooks/useAuth"; // Adjust the import path as needed
+import { useAuth } from "@/lib/hooks/useAuth";
 
 export default function LoginPage() {
     // This will redirect to home if already logged in
-    useAuth(true, '/');
+    const { isAuthenticated, isLoading } = useAuth(true, '/');
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectTo = searchParams?.get('redirect') || '/';
+
+    // Don't show anything while checking auth status to prevent flashing content
+    if (isLoading) {
+        return (
+            <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[calc(100vh-200px)]">
+                <p>Loading...</p>
+            </div>
+        );
+    }
+
+    // If already authenticated, the useAuth hook will handle redirect
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
+        setIsSubmitting(true);
         setError('');
 
         try {
@@ -43,12 +56,12 @@ export default function LoginPage() {
             // Trigger a storage event so other tabs know we've logged in
             window.dispatchEvent(new Event('storage'));
 
-            // Redirect to home or previous page
-            router.push('/');
+            // Redirect to the originally requested page or home
+            router.push(redirectTo);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Login failed');
         } finally {
-            setIsLoading(false);
+            setIsSubmitting(false);
         }
     };
 
@@ -92,8 +105,8 @@ export default function LoginPage() {
                         />
                     </div>
 
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                        {isLoading ? 'Logging in...' : 'Login'}
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? 'Logging in...' : 'Login'}
                     </Button>
                 </form>
 

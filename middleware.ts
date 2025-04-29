@@ -1,25 +1,33 @@
-// middleware.ts
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('token')?.value || ''
-  const isAuthPage = request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/signup'
+  // Get token from both cookie and authorization header
+  const token = request.cookies.get('token')?.value
   
-  // If trying to access auth pages while logged in, redirect to home
-  if (isAuthPage && token) {
-    return NextResponse.redirect(new URL('/', request.url))
-  }
-
-  // For protected pages that require auth, redirect to login if not logged in
-  // Add your protected routes here
+  // Define public and protected routes
+  const isAuthPage = request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/signup'
   const protectedRoutes = ['/cart', '/profile', '/orders']
   const isProtectedRoute = protectedRoutes.some(route => 
     request.nextUrl.pathname.startsWith(route)
   )
 
+  // Extract the redirect URL if it exists in the request
+  const url = request.nextUrl.clone()
+  const redirectParam = request.nextUrl.searchParams.get('redirect')
+  
+  // If trying to access auth pages while logged in, redirect to home or to the redirect param
+  if (isAuthPage && token) {
+    const redirectUrl = redirectParam ? redirectParam : '/'
+    return NextResponse.redirect(new URL(redirectUrl, request.url))
+  }
+
+  // For protected pages that require auth, redirect to login if not logged in
   if (isProtectedRoute && !token) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    // Add the current path as a redirect parameter
+    url.pathname = '/login'
+    url.searchParams.set('redirect', request.nextUrl.pathname)
+    return NextResponse.redirect(url)
   }
 
   return NextResponse.next()

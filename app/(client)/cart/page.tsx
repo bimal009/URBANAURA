@@ -5,13 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth } from "@/lib/hooks/useAuth"; // Adjust the import path as needed
+import { useAuth } from "@/lib/hooks/useAuth";
 
 export default function CartPage() {
-    // This will ensure user is logged in, otherwise redirect to login
-    useAuth();
-
+    // Protected route - this ensures user is logged in
+    const { isAuthenticated, isLoading } = useAuth();
     const { items, updateQuantity, removeItem, clearCart } = useCartStore();
+
+    // Don't show anything while checking auth status
+    if (isLoading) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <p className="text-center">Loading...</p>
+            </div>
+        );
+    }
 
     const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 

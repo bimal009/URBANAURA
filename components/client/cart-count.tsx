@@ -34,7 +34,8 @@ export function CartCount() {
         if (isAuthenticated) {
             router.push("/cart");
         } else {
-            router.push("/login");
+            // Send users to login with a redirect back to cart
+            router.push("/login?redirect=/cart");
         }
     };
 
