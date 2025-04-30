@@ -16,6 +16,7 @@ export function useAuth(redirectIfAuthenticated = false, redirectPath = '/login'
 
   useEffect(() => {
     const checkAuth = () => {
+      // Check both localStorage and cookies for auth state
       const token = localStorage.getItem('token');
       const isAuth = !!token;
       setIsAuthenticated(isAuth);

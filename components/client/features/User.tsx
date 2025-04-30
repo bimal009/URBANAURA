@@ -52,15 +52,35 @@ const User = () => {
 
     const handleLogout = async () => {
         try {
-            await fetch('/api/auth/logout', { method: 'POST' })
-            localStorage.removeItem("token")
-            logout()
-            setIsAuthenticated(false)
-            router.push('/login')
+            // Call the logout API endpoint
+            const response = await fetch('/api/auth/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                // Clear local state
+                localStorage.removeItem("token");
+                setIsAuthenticated(false);
+
+                // Use the logout function from userStore if available
+                if (logout) {
+                    logout();
+                } else {
+                    setUser(null);
+                }
+
+                // Redirect to login page
+                router.push('/login');
+            } else {
+                console.error('Logout failed');
+            }
         } catch (error) {
-            console.error('Error logging out:', error)
+            console.error('Error during logout:', error);
         }
-    }
+    };
 
     return (
         <DropdownMenu>

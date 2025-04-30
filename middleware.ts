@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  // Get token from both cookie and authorization header
+  // Get token from cookie
   const token = request.cookies.get('token')?.value
   
   // Define public and protected routes
@@ -18,7 +18,7 @@ export function middleware(request: NextRequest) {
   
   // If trying to access auth pages while logged in, redirect to home or to the redirect param
   if (isAuthPage && token) {
-    const redirectUrl = redirectParam ? redirectParam : '/'
+    const redirectUrl = redirectParam || '/'
     return NextResponse.redirect(new URL(redirectUrl, request.url))
   }
 

@@ -6,14 +6,24 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function CartPage() {
+    const router = useRouter();
     // Protected route - this ensures user is logged in
-    const { isAuthenticated, isLoading } = useAuth();
+    const { isAuthenticated, isLoading } = useAuth(false, '/login');
     const { items, updateQuantity, removeItem, clearCart } = useCartStore();
 
+    // Redirect to login if not authenticated
+    useEffect(() => {
+        if (!isLoading && !isAuthenticated) {
+            router.push(`/login?redirect=${encodeURIComponent('/cart')}`);
+        }
+    }, [isLoading, isAuthenticated, router]);
+
     // Don't show anything while checking auth status
-    if (isLoading) {
+    if (isLoading || !isAuthenticated) {
         return (
             <div className="container mx-auto px-4 py-8">
                 <p className="text-center">Loading...</p>

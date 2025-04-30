@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import User from './features/User';
 
 import { useMediaStatus } from './hooks/use-mobile';
-import { Search } from 'lucide-react';
+import { Search, LogIn } from 'lucide-react';
 
 import {
     Sheet,
@@ -39,11 +39,16 @@ const Navbar = () => {
         setIsClient(true);
         const storedToken = localStorage.getItem("token");
         setToken(storedToken);
-    }, []);
 
-    const QuickLinks = [
-        ...(!token ? [{ href: "/login", label: "Login" }] : []),
-    ];
+        // Listen for token changes (for example after login/logout)
+        const handleStorageChange = () => {
+            const currentToken = localStorage.getItem("token");
+            setToken(currentToken);
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        return () => window.removeEventListener('storage', handleStorageChange);
+    }, []);
 
     // Handle scroll effect for sticky navbar
     useEffect(() => {
@@ -59,20 +64,10 @@ const Navbar = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Don't render QuickLinks until client-side hydration is complete
-    const renderQuickLinks = () => {
-        if (!isClient) return null;
-        return QuickLinks.map((item, index) => (
-            <div key={`quick-${index}`} className='text-white/90 hover:text-white text-sm font-medium transition-colors px-2'>
-                <Link href={item.href}>{item.label}</Link>
-            </div>
-        ));
-    };
-
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
             {/* Main Navbar */}
-            <div className={`px-4 sm:px-10 lg:px-40 overflow-x-hidden py-4   flex items-center justify-between bg-primary w-auto  transition-all duration-300 ${isScrolled ? 'py-3' : ''}`}>
+            <div className={`px-4 sm:px-10 lg:px-40 overflow-x-hidden py-4 flex items-center justify-between bg-primary w-auto transition-all duration-300 ${isScrolled ? 'py-3' : ''}`}>
                 <div className="flex items-center">
                     {/* Mobile Menu Button - Only visible on mobile */}
                     {isWide && (
@@ -145,10 +140,15 @@ const Navbar = () => {
 
                 {/* Right side container */}
                 <div className="flex items-center gap-2">
-                    {/* Quick links beside search - visible on medium screens and up */}
-                    <div className="hidden md:flex gap-5">
-                        {renderQuickLinks()}
-                    </div>
+                    {/* Login link - visible on medium screens and up when user is not logged in */}
+                    {isClient && !token && (
+                        <div className="hidden md:flex items-center">
+                            <Link href="/login" className="text-white/90 hover:text-white transition-colors flex items-center gap-1">
+                                <LogIn size={18} />
+                                <span>Login</span>
+                            </Link>
+                        </div>
+                    )}
 
                     {/* Search icon */}
                     <div className="flex items-center justify-center h-8 w-8">
@@ -161,10 +161,12 @@ const Navbar = () => {
                         </button>
                     </div>
 
-                    {/* User icon */}
-                    <div className="flex items-center justify-center h-8 w-8">
-                        <User />
-                    </div>
+                    {/* User icon - only shown when logged in */}
+                    {isClient && token && (
+                        <div className="flex items-center justify-center h-8 w-8">
+                            <User />
+                        </div>
+                    )}
 
                     {/* Cart icon */}
                     <div className="flex items-center justify-center h-8 w-8">
