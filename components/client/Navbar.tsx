@@ -34,20 +34,32 @@ const Navbar = () => {
     const [isClient, setIsClient] = useState(false);
     const [token, setToken] = useState<string | null>(null);
 
-    // Set isClient to true on mount
+    // Check authentication state
+    const checkAuthState = () => {
+        if (typeof window !== 'undefined') {
+            const storedToken = localStorage.getItem("token");
+            setToken(storedToken);
+        }
+    };
+
+    // Set isClient to true on mount and setup auth state
     useEffect(() => {
         setIsClient(true);
-        const storedToken = localStorage.getItem("token");
-        setToken(storedToken);
+        checkAuthState();
 
         // Listen for token changes (for example after login/logout)
         const handleStorageChange = () => {
-            const currentToken = localStorage.getItem("token");
-            setToken(currentToken);
+            checkAuthState();
         };
 
+        // Listen for both storage events (other tabs) and our custom event (same tab)
         window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
+        window.addEventListener('authStateChanged', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('authStateChanged', handleStorageChange);
+        };
     }, []);
 
     // Handle scroll effect for sticky navbar

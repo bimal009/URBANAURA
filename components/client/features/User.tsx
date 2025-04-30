@@ -63,6 +63,11 @@ const User = () => {
             if (response.ok) {
                 // Clear local state
                 localStorage.removeItem("token");
+
+                // Manually trigger the storage event to update other components
+                window.dispatchEvent(new Event('storage'));
+
+                // Update authentication state
                 setIsAuthenticated(false);
 
                 // Use the logout function from userStore if available
@@ -81,6 +86,11 @@ const User = () => {
             console.error('Error during logout:', error);
         }
     };
+
+    // If not authenticated, don't render the user dropdown
+    if (!isAuthenticated) {
+        return null;
+    }
 
     return (
         <DropdownMenu>
