@@ -53,7 +53,7 @@ export default function ProductDetails() {
 
     if (isLoading) {
         return (
-            <div className="container mx-auto px-4 py-16">
+            <div className="container mx-auto px-4 py-16 mt-10">
                 <div className="flex items-center justify-center h-64">
                     <div className="animate-pulse space-y-8 w-full max-w-6xl">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -77,7 +77,7 @@ export default function ProductDetails() {
 
     if (!product) {
         return (
-            <div className="container mx-auto px-4 py-16">
+            <div className="container mx-auto px-4 py-16 mt-10">
                 <div className="text-center space-y-4">
                     <h1 className="text-2xl font-semibold">Product not found</h1>
                     <p className="text-muted-foreground">The product you're looking for doesn't exist or has been removed.</p>
@@ -90,7 +90,7 @@ export default function ProductDetails() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-16">
+        <div className="container mx-auto px-4 py-16 mt-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                 {/* Product Image */}
                 <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-50 border shadow-sm">

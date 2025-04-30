@@ -4,7 +4,7 @@ import React from 'react'
 
 const page = () => {
     return (
-        <div className='container mt-5 mx-auto'>
+        <div className='container mt-5 mx-auto mt-10'>
             <ProductLoader />
             <Products />
         </div>
