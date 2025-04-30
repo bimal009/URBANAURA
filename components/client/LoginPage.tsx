@@ -15,7 +15,8 @@ type LoginInputs = {
 export default function LoginPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const redirectTo = searchParams.get("redirect") || "/";
+    const redirectTo = searchParams.get("redirect",) || "/";
+
 
     // Redirect away if already authenticated
     useAuth(true, redirectTo);
@@ -55,6 +56,8 @@ export default function LoginPage() {
             localStorage.setItem("token", responseData.token);
 
             setIsSuccess(true);
+            console.log(responseData)
+            window.location.href = "/"
         } catch (err) {
             console.error("Login error:", err);
             setIsError(true);

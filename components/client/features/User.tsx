@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 
 const User = () => {
+
     const { user, setUser, logout } = useUserStore()
     const router = useRouter()
     const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -33,11 +34,11 @@ const User = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await fetch('/api/user')
-                if (response.ok) {
-                    const userData = await response.json()
-                    setUser(userData)
-                }
+                // const response = await fetch('/api/auth/user')
+                // if (response.ok) {
+                //     const userData = await response.json()
+                //     setUser(userData)
+                // }
             } catch (error) {
                 console.error('Error fetching user:', error)
                 setIsAuthenticated(false)
@@ -78,7 +79,8 @@ const User = () => {
                 }
 
                 // Redirect to login page
-                router.push('/login');
+                window.location.href = '/login';
+                // router.push('/login');
             } else {
                 console.error('Logout failed');
             }

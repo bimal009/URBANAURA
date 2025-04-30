@@ -9,6 +9,7 @@ export type User = {
 }
 
 type UserStore = {
+  id: string | null
   user: User | null
   setUser: (user: User | null) => void
   logout: () => void
@@ -17,6 +18,7 @@ type UserStore = {
 export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
+      id:  null,
       user: null,
       setUser: (user) => set({ user }),
       logout: () => set({ user: null }),

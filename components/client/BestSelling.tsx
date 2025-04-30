@@ -43,7 +43,7 @@ const BestSellingPage: React.FC = () => {
             originalPrice: 119.99,
             rating: 4.9,
             reviewCount: 245,
-            image: "/api/placeholder/500/600",
+            image: "/images/urban-comfort-hoodie.jpg",
             category: "Hoodies",
             isNew: true,
             discount: 25,
@@ -55,7 +55,7 @@ const BestSellingPage: React.FC = () => {
             originalPrice: 159.99,
             rating: 4.8,
             reviewCount: 189,
-            image: "/api/placeholder/500/600",
+            image: "/images/classic-denim-jacket.jpg",
             category: "Jackets",
             isNew: false,
             discount: 20,
@@ -67,12 +67,13 @@ const BestSellingPage: React.FC = () => {
             originalPrice: 49.99,
             rating: 4.7,
             reviewCount: 312,
-            image: "/api/placeholder/500/600",
+            image: "/images/premium-cotton-tshirt.jpg",
             category: "T-Shirts",
             isNew: false,
             discount: 15,
         }
     ];
+
 
     const renderProductCard = (product: Product) => {
         return (

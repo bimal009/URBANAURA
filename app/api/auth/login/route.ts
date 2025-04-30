@@ -41,6 +41,7 @@ export async function POST(request: Request) {
       token
     })
     
+    
     // Add cookie to the response
     response.cookies.set('token', token, {
       httpOnly: true,
