@@ -6,26 +6,26 @@ import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useEffect } from "react";
 
-type SigninInputs = {
+type SignUpInputs = {
     email: string;
     password: string;
-    username: string;
+    name: string;
     id?: string;
 };
 
 export default function Page() {
     const router = useRouter()
-    const { mutate: signIn, isPending, isSuccess, isError, data: signUpData } = useSignUpMutation();
+    const { mutate: signUp, isPending, isSuccess, isError } = useSignUpMutation();
 
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<SigninInputs>();
+    } = useForm<SignUpInputs>();
 
-    const onSubmit: SubmitHandler<SigninInputs> = (data) => {
+    const onSubmit: SubmitHandler<SignUpInputs> = (data) => {
         console.log("Sign Up Data:", data);
-        signIn(data);
+        signUp(data);
     };
 
     useEffect(() => {
@@ -61,11 +61,11 @@ export default function Page() {
                     <input
                         type="text"
                         placeholder="Enter your username"
-                        {...register("username", { required: "Username is required" })}
+                        {...register("name", { required: "Username is required" })}
                         className="w-full px-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
                     />
-                    {errors.username && (
-                        <p className="text-destructive text-sm mt-1">{errors.username.message}</p>
+                    {errors.name && (
+                        <p className="text-destructive text-sm mt-1">{errors.name.message}</p>
                     )}
                 </div>
 
