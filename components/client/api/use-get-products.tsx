@@ -25,7 +25,7 @@ const useGetProducts = () => {
         queryFn: async () => {
             try {
                 const response = await fetch(
-                    "https://fakestoreapi.com/products",
+                    "https://fakestoreapi.com/products/category/women's clothing",
                     {
                         method: "GET",
                         headers: {

@@ -15,7 +15,7 @@ export default function About() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
                 <div className="relative h-[400px] rounded-lg overflow-hidden">
                     <Image
-                        src="/about-image.jpg"
+                        src="https://images.unsplash.com/photo-1470309864661-68328b2cd0a5?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2xvdGhlcyUyMG1hcmtldHxlbnwwfHwwfHx8MA%3D%3D"
                         alt="Urban Design"
                         fill
                         className="object-cover"

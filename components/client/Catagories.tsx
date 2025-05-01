@@ -19,7 +19,7 @@ const CategorySection: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("https://fakestoreapi.com/products/category/men's clothing");
+                const response = await fetch("https://fakestoreapi.com/products/category/women's clothing");
 
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -70,7 +70,7 @@ const CategorySection: React.FC = () => {
                             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent flex flex-col justify-end p-6">
                                 <h3 className="text-xl font-bold text-white mb-1">{product.title}</h3>
                                 <p className="text-white/80 mb-4 text-sm line-clamp-2">{product.description}</p>
-                                <Link href={`/categories/${product.category}`}>
+                                <Link href={`/products/${product.id}`}>
                                     <div className="inline-flex items-center bg-white text-primary px-4 py-2 rounded-full text-sm font-medium hover:bg-secondary transition-colors">
                                         Shop Now <ArrowRight size={16} className="ml-1" />
                                     </div>

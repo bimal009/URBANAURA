@@ -1,6 +1,6 @@
 "use client";
 
-import { useCartStore } from "@/lib/store/cart";
+import useCartStore from "@/lib/store/cart";
 import { ShoppingCart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";

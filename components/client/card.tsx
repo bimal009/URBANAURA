@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useCartStore } from "@/lib/store/cart";
+import useCartStore from "@/lib/store/cart";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 // Product type definition
 type Product = {
@@ -66,6 +67,7 @@ const Cards: React.FC<CardProps> = ({ product, children, className, onClick }) =
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.stopPropagation();
+
         if (!isAuthenticated) {
             router.push('/login');
             return;
@@ -78,6 +80,9 @@ const Cards: React.FC<CardProps> = ({ product, children, className, onClick }) =
                 image: product.image
             });
         }
+
+        toast.success('Item added to cart');
+
     };
 
     if (product) {

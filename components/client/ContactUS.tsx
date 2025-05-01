@@ -1,41 +1,36 @@
 "use client"
+
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { toast } from 'sonner'
-import Cards from './card'
+import { Card } from '@/components/ui/card'
+import { Mail, Phone, MapPin } from 'lucide-react'
 
-const contactSchema = z.object({
-    name: z.string().min(2, 'Name must be at least 2 characters'),
-    email: z.string().email('Invalid email address'),
-    subject: z.string().min(5, 'Subject must be at least 5 characters'),
-    message: z.string().min(10, 'Message must be at least 10 characters'),
-})
-
-type ContactFormData = z.infer<typeof contactSchema>
-
-export default function ContactUs() {
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors, isSubmitting },
-    } = useForm<ContactFormData>({
-        resolver: zodResolver(contactSchema),
+export function ContactUs() {
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        message: ''
     })
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
-    const onSubmit = async (data: ContactFormData) => {
-        try {
-            // Here you would typically send the data to your API
-            console.log('Form data:', data)
-            toast.success('Message sent successfully!')
-            reset()
-        } catch (error) {
-            toast.error('Failed to send message. Please try again.')
-        }
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target
+        setFormData(prev => ({ ...prev, [name]: value }))
+    }
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        setIsSubmitting(true)
+
+        // Simulate form submission
+        setTimeout(() => {
+            setIsSubmitting(false)
+            // Reset form after submission
+            setFormData({ name: '', email: '', message: '' })
+            alert('Thank you for your message! We will get back to you soon.')
+        }, 1000)
     }
 
     return (
@@ -49,96 +44,101 @@ export default function ContactUs() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <Cards className="p-8 flex flex-col h-full">
-                    <h2 className="text-2xl font-semibold mb-6">Send us a Message</h2>
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 flex-grow">
-                        <div>
-                            <label className="block text-sm font-medium mb-2">Name</label>
+                {/* Left Column - Contact Info */}
+                <div className="space-y-8">
+                    <Card className="p-8 flex flex-col h-full">
+                        <h2 className="text-2xl font-semibold mb-6">Contact Information</h2>
+                        <div className="space-y-4 flex-grow">
+                            <div className="flex items-start">
+                                <MapPin className="h-5 w-5 text-primary mr-3 mt-1 flex-shrink-0" />
+                                <div>
+                                    <h3 className="font-medium mb-2">Address</h3>
+                                    <p className="text-muted-foreground">
+                                        123 Urban Street<br />
+                                        City, State 12345<br />
+                                        United States
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start">
+                                <Mail className="h-5 w-5 text-primary mr-3 mt-1 flex-shrink-0" />
+                                <div>
+                                    <h3 className="font-medium mb-2">Email</h3>
+                                    <p className="text-muted-foreground">contact@urbanaura.com</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start">
+                                <Phone className="h-5 w-5 text-primary mr-3 mt-1 flex-shrink-0" />
+                                <div>
+                                    <h3 className="font-medium mb-2">Phone</h3>
+                                    <p className="text-muted-foreground">+1 (555) 123-4567</p>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+
+
+                </div>
+
+                {/* Right Column - Contact Form */}
+                <Card className="p-8">
+                    <h2 className="text-2xl font-semibold mb-6">Send Us a Message</h2>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="space-y-2">
+                            <label htmlFor="name" className="block text-sm font-medium">
+                                Name
+                            </label>
                             <Input
-                                {...register('name')}
+                                id="name"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
                                 placeholder="Your name"
-                                className="w-full"
+                                required
                             />
-                            {errors.name && (
-                                <p className="text-destructive text-sm mt-1">{errors.name.message}</p>
-                            )}
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium mb-2">Email</label>
+                        <div className="space-y-2">
+                            <label htmlFor="email" className="block text-sm font-medium">
+                                Email
+                            </label>
                             <Input
-                                {...register('email')}
+                                id="email"
+                                name="email"
                                 type="email"
-                                placeholder="your.email@example.com"
-                                className="w-full"
+                                value={formData.email}
+                                onChange={handleChange}
+                                placeholder="Your email address"
+                                required
                             />
-                            {errors.email && (
-                                <p className="text-destructive text-sm mt-1">{errors.email.message}</p>
-                            )}
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium mb-2">Subject</label>
-                            <Input
-                                {...register('subject')}
-                                placeholder="What is this regarding?"
-                                className="w-full"
-                            />
-                            {errors.subject && (
-                                <p className="text-destructive text-sm mt-1">{errors.subject.message}</p>
-                            )}
-                        </div>
-
-                        <div className="flex-grow">
-                            <label className="block text-sm font-medium mb-2">Message</label>
+                        <div className="space-y-2">
+                            <label htmlFor="message" className="block text-sm font-medium">
+                                Message
+                            </label>
                             <Textarea
-                                {...register('message')}
-                                placeholder="Your message"
-                                className="w-full min-h-[150px]"
+                                id="message"
+                                name="message"
+                                value={formData.message}
+                                onChange={(e) => handleChange(e as unknown as React.ChangeEvent<HTMLInputElement>)}
+                                placeholder="How can we help you?"
+                                rows={5}
+                                required
                             />
-                            {errors.message && (
-                                <p className="text-destructive text-sm mt-1">{errors.message.message}</p>
-                            )}
                         </div>
 
-                        <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        <Button
+                            type="submit"
+                            className="w-full"
+                            disabled={isSubmitting}
+                        >
                             {isSubmitting ? 'Sending...' : 'Send Message'}
                         </Button>
                     </form>
-                </Cards>
-
-                <div className="space-y-8">
-                    <Cards className="p-8 flex flex-col h-full">
-                        <h2 className="text-2xl font-semibold mb-6">Contact Information</h2>
-                        <div className="space-y-4 flex-grow">
-                            <div>
-                                <h3 className="font-medium mb-2">Address</h3>
-                                <p className="text-muted-foreground">
-                                    123 Urban Street<br />
-                                    City, State 12345<br />
-                                    United States
-                                </p>
-                            </div>
-                            <div>
-                                <h3 className="font-medium mb-2">Email</h3>
-                                <p className="text-muted-foreground">contact@urbanaura.com</p>
-                            </div>
-                            <div>
-                                <h3 className="font-medium mb-2">Phone</h3>
-                                <p className="text-muted-foreground">+1 (555) 123-4567</p>
-                            </div>
-                        </div>
-                    </Cards>
-
-                    <Cards className="p-8 flex flex-col h-full">
-                        <h2 className="text-2xl font-semibold mb-6">Business Hours</h2>
-                        <div className="space-y-2 flex-grow">
-                            <p className="text-muted-foreground">Monday - Friday: 9:00 AM - 6:00 PM</p>
-                            <p className="text-muted-foreground">Saturday: 10:00 AM - 4:00 PM</p>
-                            <p className="text-muted-foreground">Sunday: Closed</p>
-                        </div>
-                    </Cards>
-                </div>
+                </Card>
             </div>
         </div>
     )

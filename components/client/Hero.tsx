@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, TrendingUp, Star, Award } from 'lucide-react';
 import Image from 'next/image';
+import { Button } from '../ui/button';
 
 const Hero = () => {
     return (
@@ -30,15 +31,17 @@ const Hero = () => {
                             Discover the latest trends in urban fashion curated for those who appreciate modern elegance with timeless appeal.
                         </p>
 
-                        <div className="flex flex-wrap gap-4">
-                            <Link
-                                href="/products"
+                        <div className="flex flex-wrap gap-4 ">
+                            <Button
+                                variant="outline"
                                 className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-full px-6 py-3 flex items-center transition-all"
+                                asChild
                             >
-                                Shop Now
-                                <ArrowRight className="ml-2 h-5 w-5" />
-                            </Link>
-
+                                <Link href="/products">
+                                    Shop Now
+                                    <ArrowRight className="ml-2 h-5 w-5" />
+                                </Link>
+                            </Button>
                         </div>
 
                         {/* Trust badges */}

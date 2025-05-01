@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { StarIcon, ShoppingCart, Heart, Truck, RefreshCcw } from 'lucide-react'
 import useProductStore from '@/lib/store/ProductStore'
+import useCartStore from '@/lib/store/cart'
 import type { Product } from '@/lib/store/ProductStore'
 import { Separator } from '@/components/ui/separator'
+import { toast } from 'sonner'
 
 const RatingStars: React.FC<{ rating: number }> = ({ rating }) => {
     return (
@@ -31,9 +33,12 @@ const RatingStars: React.FC<{ rating: number }> = ({ rating }) => {
 export default function ProductDetails() {
     const params = useParams()
     const products = useProductStore((state) => state.products)
+    // Get cart actions from cartStore
+    const { items, addItem, updateQuantity } = useCartStore()
     const [product, setProduct] = useState<Product | null>(null)
     const [quantity, setQuantity] = useState(1)
     const [isLoading, setIsLoading] = useState(true)
+    const [isAddingToCart, setIsAddingToCart] = useState(false)
 
     useEffect(() => {
         // Simulate loading state for better UX
@@ -50,6 +55,42 @@ export default function ProductDetails() {
 
     const incrementQuantity = () => setQuantity(prev => prev + 1)
     const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1))
+
+    // Handle add to cart with animation
+    const handleAddToCart = () => {
+        if (!product) return
+
+        setIsAddingToCart(true)
+
+        // Add to cart after a short delay to show the button animation
+        setTimeout(() => {
+            // Check if item already exists in cart
+            const existingItem = items.find(item => item.id === product.id)
+
+            if (existingItem) {
+                // Update quantity if item exists
+                updateQuantity(product.id, existingItem.quantity + quantity)
+            } else {
+                // Add new item if it doesn't exist
+                addItem({
+                    id: product.id,
+                    name: product.title,
+                    price: product.price,
+                    image: product.image
+                })
+
+                // If quantity is more than 1, update the quantity after adding
+                if (quantity > 1) {
+                    updateQuantity(product.id, quantity)
+                }
+            }
+
+            setIsAddingToCart(false)
+
+            // Show toast notification - FIXED: Pass strings instead of an object
+            toast.success(`${quantity} × ${product.title} added to your cart`);
+        }, 300)
+    }
 
     if (isLoading) {
         return (
@@ -155,9 +196,18 @@ export default function ProductDetails() {
                     </div>
 
                     <div className="flex gap-4">
-                        <Button size="lg" className="flex-1">
+                        <Button
+                            size="lg"
+                            className="flex-1"
+                            onClick={handleAddToCart}
+                            disabled={isAddingToCart}
+                        >
                             <ShoppingCart className="mr-2 h-4 w-4" />
-                            Add to Cart
+                            {isAddingToCart ? (
+                                <span className="animate-pulse">Adding...</span>
+                            ) : (
+                                "Add to Cart"
+                            )}
                         </Button>
                         <Button size="lg" variant="outline">
                             <Heart className="h-4 w-4" />
