@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner"
 
 import { QueryProvider } from "@/providers/queryProvider";
 
+
 export default function RootLayout({
     children,
 }: Readonly<{
