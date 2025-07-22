@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { fetchUserProfile, logoutUser } from '@/utils/api'
 
 const User = () => {
 
@@ -34,11 +35,8 @@ const User = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                // const response = await fetch('/api/auth/user')
-                // if (response.ok) {
-                //     const userData = await response.json()
-                //     setUser(userData)
-                // }
+                const response = await fetchUserProfile()
+                setUser(response)
             } catch (error) {
                 console.error('Error fetching user:', error)
                 setIsAuthenticated(false)
@@ -53,43 +51,26 @@ const User = () => {
 
     const handleLogout = async () => {
         try {
-            // Call the logout API endpoint
-            const response = await fetch('/api/auth/logout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            logoutUser()
 
-            if (response.ok) {
-                // Clear local state
-                localStorage.removeItem("token");
+            localStorage.removeItem("token");
 
-                // Manually trigger the storage event to update other components
-                window.dispatchEvent(new Event('storage'));
 
-                // Update authentication state
                 setIsAuthenticated(false);
 
-                // Use the logout function from userStore if available
                 if (logout) {
                     logout();
                 } else {
                     setUser(null);
                 }
 
-                // Redirect to login page
                 window.location.href = '/login';
-                // router.push('/login');
-            } else {
-                console.error('Logout failed');
-            }
+
         } catch (error) {
             console.error('Error during logout:', error);
         }
     };
 
-    // If not authenticated, don't render the user dropdown
     if (!isAuthenticated) {
         return null;
     }

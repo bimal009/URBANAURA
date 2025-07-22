@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useAuth } from "@/lib/hooks/useAuth";
 
 type LoginInputs = {
     email: string;
@@ -19,7 +18,6 @@ export default function LoginPage() {
 
 
     // Redirect away if already authenticated
-    useAuth(true, redirectTo);
 
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -37,7 +35,7 @@ export default function LoginPage() {
         setIsError(false);
 
         try {
-            const response = await fetch("/api/auth/login", {
+            const response = await fetch("http://localhost:8000/api/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -52,7 +50,6 @@ export default function LoginPage() {
 
             const responseData = await response.json();
 
-            // Save token to localStorage for client-side auth
             localStorage.setItem("token", responseData.token);
 
             setIsSuccess(true);
